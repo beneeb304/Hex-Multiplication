@@ -1,0 +1,233 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+Assignment 3_Neeb.exe -- emu8086 assembler version: 4.08  
+ 
+[ 10/1/2021  --  2:59:37 PM ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       ;--------------------------------------
+[   2]        :                                       ; Triangle Program
+[   3]        :                                       ;--------------------------------------
+[   4]        :                                       
+[   5]        :                                       ;Short answer questions:
+[   6]        :                                       ;   1.  With the current program and resources, yes; there is a limit.
+[   7]        :                                       ;       The limit exists because it's only a 16-bit processor and I am using the ax to perform multiplication.
+[   8]        :                                       ;       The ax register can hold 16 bits. If the user calculated more than the first 25 terms, he would eventually
+[   9]        :                                       ;       run out of memory purely due to physical limitations.
+[  10]        :                                       ;
+[  11]        :                                       ;   2.  It would create an overflow error. Technically, I could budget resources to reach beyond the 16-bit limit
+[  12]        :                                       ;       by performing separate multiplication and just combining print outputs.
+[  13]        :                                       
+[  14]        :                                       
+[  15]        :                                       .MODEL  small
+[  16]        :                                       .STACK  100h
+[  17]        :                                       
+[  18]        :                                       .DATA
+[  19]    0100: 54 68 65 20 62 69 67 20 6F 6C 27 20   msg         DB      "The big ol' triangle program!$"
+                74 72 69 61 6E 67 6C 65 20 70 72 6F 
+                67 72 61 6D 21 24                   
+[  20]    011E: 30 31 32 33 34 35 36 37 38 39 41 42   hextable    DB      '0123456789ABCDEF'  ;An array of all Hex values
+                43 44 45 46                         
+[  21]    012E: 2C 20 24                              comma       DB      ", $"
+[  22]    0131: 00 01                                 pLine       DW      0100h
+[  23]        :                                       
+[  24]        :                                       .CODE
+[  25]    0140:                                       start:
+[  26]    0140: B8 10 00                              mov     ax,@DATA
+[  27]    0143: 8E D8                                 mov     ds,ax
+[  28]        :                                       
+[  29]    0145: E8 41 00                              call    display_msg     ;Call procedure to display message
+[  30]        :                                       
+[  31]    0148: E8 25 00                              call        shift_row
+[  32]    014B: E8 22 00                              call        shift_row
+[  33]        :                                       
+[  34]    014E: B9 00 00                              mov     cx,0
+[  35]        :                                       
+[  36]    0151:                                       loop:
+[  37]        :                                       ;logic here
+[  38]        :                                       
+[  39]    0151: 41                                    inc     cx                  ;increment our counter
+[  40]        :                                       
+[  41]        :                                       ;TRIANGLE FORMULA IS n(n+1)/2
+[  42]        :                                       
+[  43]    0152: 8B D9                                 mov     bx,cx               ;copy counter value into bx for multiplication [n]
+[  44]    0154: 8B C1                                 mov     ax,cx               ;copy counter value into ax and add 1 [n + 1]
+[  45]    0156: 40                                    inc     ax
+[  46]        :                                       
+[  47]    0157: F7 E3                                 mul     bx                  ;multiply bx and ax together [n(n+1)]
+[  48]        :                                       
+[  49]    0159: BB 02 00                              mov     bx,02               ;copy value 02 into the bx
+[  50]        :                                       
+[  51]    015C: F7 F3                                 div     bx                  ;divide the ax by bx [ax/2]
+[  52]        :                                       
+[  53]    015E: E8 30 00                              call    display_hex         ;Call procedure to display hex
+[  54]        :                                       
+[  55]    0161: 83 F9 19                              cmp     cx,25
+[  56]        :                                       
+[  57]    0164: 74 05                                 jz      code2               ;If we need to print a comma and loop
+[  58]        :                                       
+[  59]    0166:                                       code1:
+[  60]    0166: E8 18 00                              call    print_comma
+[  61]    0169: EB E6                                 jmp     loop
+[  62]    016B:                                       code2:
+[  63]        :                                       ENDP
+[  64]    016B:                                       exit:
+[  65]    016B: B8 00 4C                              mov     ax,4C00h
+[  66]    016E: CD 21                                 int     21h
+[  67]        :                                       
+[  68]        :                                       ;--------------------------------------
+[  69]        :                                       ; shift_row - shifts output row accordingly
+[  70]        :                                       ;--------------------------------------
+[  71]    0170:                                       shift_row     PROC    near
+[  72]        :                                       
+[  73]    0170: B4 02                                 mov     ah,02h
+[  74]    0172: B7 00                                 mov     bh,00h      ; page 0
+[  75]    0174: 8B 16 31 00                           mov     dx,pLine    ; Increment rows with pLine
+[  76]    0178: 81 06 31 00 00 01                     ADD     pLine,100h  ;Add 100h to pLine every loop
+[  77]    017E: CD 10                                 int     10h
+[  78]    0180: C3                                    ret
+[  79]        :                                       shift_row     ENDP
+[  80]        :                                       
+[  81]        :                                       ;--------------------------------------
+[  82]        :                                       ; print_comma - used to print a comma and space between terms
+[  83]        :                                       ;--------------------------------------
+[  84]    0181:                                       print_comma   PROC    near
+[  85]    0181: BA 2E 00                              lea     dx,comma
+[  86]    0184: B4 09                                 mov     ah,09h
+[  87]    0186: CD 21                                 int     21h
+[  88]    0188: C3                                    ret             ;Return control to calling program
+[  89]        :                                       print_comma   ENDP
+[  90]        :                                       
+[  91]        :                                       ;--------------------------------------
+[  92]        :                                       ; display_msg - used to display a text message
+[  93]        :                                       ;--------------------------------------
+[  94]        :                                       
+[  95]    0189:                                       display_msg   PROC    near
+[  96]    0189: BA 00 00                              lea     dx,msg
+[  97]    018C: B4 09                                 mov     ah,09h
+[  98]    018E: CD 21                                 int     21h
+[  99]    0190: C3                                    ret             ;Return control to calling program
+[ 100]        :                                       display_msg   ENDP
+[ 101]        :                                       
+[ 102]        :                                       ;--------------------------------------
+[ 103]        :                                       ; display_hex - converts a decimal number to hex
+[ 104]        :                                       ;               one hex digit at a time and then
+[ 105]        :                                       ;               displays the converted digit
+[ 106]        :                                       ;--------------------------------------
+[ 107]        :                                       
+[ 108]    0191:                                       display_hex   PROC    near
+[ 109]        :                                       
+[ 110]        :                                       ;---
+[ 111]        :                                       ;--- We will use ax, bx, cx and dx in this routine
+[ 112]        :                                       ;--- which would corrupt whatever data was in them
+[ 113]        :                                       ;--- from the main program.  Therefore, we should
+[ 114]        :                                       ;--- preserve a copy on the stack by pushing them...
+[ 115]        :                                       
+[ 116]    0191: 50                                    push       ax
+[ 117]    0192: 53                                    push       bx
+[ 118]    0193: 51                                    push       cx
+[ 119]    0194: 52                                    push       dx
+[ 120]        :                                       
+[ 121]    0195: 8B D8                                 mov        bx,ax   ;Copy decimal number to bx which
+[ 122]        :                                       ;is what we will dissect to get
+[ 123]        :                                       ;4 binary digits to look up in
+[ 124]        :                                       ;table
+[ 125]        :                                       
+[ 126]    0197: B1 04                                 mov        cl,04   ;We will be rotating 4 digits at a time
+[ 127]        :                                       
+[ 128]    0199: B5 04                                 mov        ch,04   ;Loop counter -- There are 4 hex digits max
+[ 129]        :                                       ;in a word (which is size of ax)
+[ 130]        :                                       
+[ 131]    019B:                                       proc_digit:
+[ 132]    019B: D3 C3                                 rol        bx,cl   ;Rotate bits left to get digit to convert in
+[ 133]        :                                       ;last 4 bits of bl
+[ 134]        :                                       
+[ 135]    019D: 8A C3                                 mov        al,bl   	     ;Copy the BL into the AL
+[ 136]    019F: 24 0F                                 and        al,00001111b  ;Clear bits 4-7 of AL
+[ 137]        :                                       ;-- bits 0-3 contain the digit and
+[ 138]        :                                       ;  we can now point at table
+[ 139]        :                                       
+[ 140]    01A1: 53                                    push       bx            ;Save the BX's contents since we need
+[ 141]        :                                       ;to convert other digits
+[ 142]        :                                       
+[ 143]    01A2: BB 1E 00                              lea        bx,hextable   ;Load the hextable's address into BX
+[ 144]        :                                       
+[ 145]    01A5: D7                                    xlat                     ;This instruction is used to look up
+[ 146]        :                                       ;information in a table.  The BX must
+[ 147]        :                                       ;point to the table's start (offset)
+[ 148]        :                                       ;and AL must point to an entry (element)
+[ 149]        :                                       ;in the table.  Once xlat is done AL
+[ 150]        :                                       ;will contain the value from the table.
+[ 151]        :                                       
+[ 152]    01A6: 5B                                    pop        bx            ;Restore bx for next digit
+[ 153]        :                                       
+[ 154]    01A7: 8A D0                                 mov        dl,al         ;Call an interrupt to print out the
+[ 155]        :                                       ;digit we got from the table
+[ 156]    01A9: B4 02                                 mov        ah,02h
+[ 157]    01AB: CD 21                                 int        21h
+[ 158]        :                                       
+[ 159]    01AD: FE CD                                 dec        ch            ;Decrement the ch counter by 1
+[ 160]    01AF: 75 EA                                 jnz        proc_digit
+[ 161]        :                                       
+[ 162]        :                                       ;---
+[ 163]        :                                       ;--- Reload original register values prior to this proc call
+[ 164]        :                                       ;---
+[ 165]        :                                       
+[ 166]    01B1: 5A                                    pop        dx
+[ 167]    01B2: 59                                    pop        cx
+[ 168]    01B3: 5B                                    pop        bx
+[ 169]    01B4: 58                                    pop        ax
+[ 170]        :                                       
+[ 171]    01B5: C3                                    ret                        ;Return control to calling program
+[ 172]        :                                       ;display_hex  ENDP
+[ 173]        :                                       
+[ 174]        :                                       END        start
+[ 175]        :                                       
+ 
+===================================================================================================
+ 
+EXE HEADER - bytes from 0000 to 01FF inclusive.
+
+0000: 4D      -   exe signature (M)
+0001: 5A      -   exe signature (Z)
+0002: B6      -   bytes on last page (l.byte)
+0003: 01      -   bytes on last page (h.byte)
+0004: 02      -   512 byte pages in file (l.byte)
+0005: 00      -   512 byte pages in file (h.byte)
+0006: 01      -   relocations (l.byte)
+0007: 00      -   relocations (h.byte)
+0008: 20      -   paragraphs in header (l.byte)
+0009: 00      -   paragraphs in header (h.byte)
+000A: 00      -   minimum memory (l.byte)
+000B: 00      -   minimum memory (h.byte)
+000C: FF      -   maximum memory (l.byte)
+000D: FF      -   maximum memory (h.byte)
+000E: 00      -   SS - stack segment (l.byte)
+000F: 00      -   SS - stack segment (h.byte)
+0010: 00      -   SP - stack pointer (l.byte)
+0011: 01      -   SP - stack pointer (h.byte)
+0012: CA      -   check sum (l.byte)
+0013: ED      -   check sum (h.byte)
+0014: 00      -   IP - instruction pointer (l.byte)
+0015: 00      -   IP - instruction pointer (h.byte)
+0016: 14      -   CS - code segment (l.byte)
+0017: 00      -   CS - code segment (h.byte)
+0018: 1E      -   relocation table adress (l.byte)
+0019: 00      -   relocation table adress (h.byte)
+001A: 00      -   overlay number (l.byte)
+001B: 00      -   overlay number (h.byte)
+001C: 01      -   signature (l.byte)
+001D: 00      -   signature (h.byte)
+001E: 01      -   relocation table - offset inside segment (l.byte)
+001F: 00      -   relocation table - offset inside segment (h.byte)
+0020: 14      -   relocation table - segment anchor (l.byte)
+0021: 00      -   relocation table - segment anchor (h.byte)
+0022 to 01FF  -   reserved relocation area  (00) 
+
+
+
+
+===================================================================================================

@@ -1,0 +1,25 @@
+< THE SYMBOL TABLE >  Assignment 3_Neeb.exe  --  emu8086 assembler version: 4.08 
+===================================================================================================
+Name                     	Offset    	Size      	Type      	Segment   
+===================================================================================================
+STACK                    	00000     	-5        	SEGMENT   	(ITSELF)  
+DATA                     	00010     	-5        	SEGMENT   	(ITSELF)  
+MSG                      	00000     	1         	VAR       	data      
+HEXTABLE                 	0001E     	1         	VAR       	data      
+COMMA                    	0002E     	1         	VAR       	data      
+PLINE                    	00031     	2         	VAR       	data      
+CODE                     	00014     	-5        	SEGMENT   	(ITSELF)  
+START                    	00000     	-1        	LABEL     	code      
+LOOP                     	00011     	-1        	LABEL     	code      
+CODE1                    	00026     	-1        	LABEL     	code      
+CODE2                    	0002B     	-1        	LABEL     	code      
+EXIT                     	0002B     	-1        	LABEL     	code      
+SHIFT_ROW                	00030     	-1        	NEAR      	code      
+PRINT_COMMA              	00041     	-1        	NEAR      	code      
+DISPLAY_MSG              	00049     	-1        	NEAR      	code      
+DISPLAY_HEX              	00051     	-1        	NEAR      	code      
+PROC_DIGIT               	0005B     	-1        	LABEL     	code      
+===================================================================================================
+[ 10/1/2021  --  2:59:37 PM ] 
+< END >
+ 
